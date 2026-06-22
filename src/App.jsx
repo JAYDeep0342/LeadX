@@ -30,7 +30,7 @@ export default function App() {
 
   // The console is a full-screen, immersive run view (no top navbar / footer).
   const is404 = !isValidRoute(page);
-  const showNavbar = page !== "console" && !is404;
+  const showNavbar = !is404;
   const showFooter = !APP_PAGES.includes(page) && !is404;
 
   return (

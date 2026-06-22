@@ -1,14 +1,16 @@
-import Home from "../pages/Home";
-import Service from "../pages/Service";
-import Company from "../pages/Company";
-import Contact from "../pages/Contact";
-import Demo from "../pages/Demo";
-import Login from "../pages/Login";
-import Actors from "../pages/Actors";
-import Console from "../pages/Console";
-import NotFound from "../pages/NotFound";
-import Solution from "../pages/Solution";
+import { lazy, Suspense } from "react";
 import { useAuth } from "../context/AuthContext";
+
+const Home     = lazy(() => import("../pages/Home"));
+const Service  = lazy(() => import("../pages/Service"));
+const Company  = lazy(() => import("../pages/Company"));
+const Contact  = lazy(() => import("../pages/Contact"));
+const Demo     = lazy(() => import("../pages/Demo"));
+const Login    = lazy(() => import("../pages/Login"));
+const Actors   = lazy(() => import("../pages/Actors"));
+const Console  = lazy(() => import("../pages/Console"));
+const NotFound = lazy(() => import("../pages/NotFound"));
+const Solution = lazy(() => import("../pages/Solution"));
 
 const MARKETING = { home: Home, service: Service, company: Company, contact: Contact, demo: Demo, solution: Solution };
 
@@ -19,9 +21,7 @@ export const isValidRoute = (page) => {
   return APP_PAGES.includes(page) || !!MARKETING[page];
 };
 
-export default function AppRoutes({ page, setPage }) {
-  const { isAuthed } = useAuth();
-
+function PageContent({ page, setPage, isAuthed }) {
   if (page === "login" || page === "signup") {
     return <Login key={page} onNavigate={setPage} initialMode={page} />;
   } else if (page === "dashboard") {
@@ -34,4 +34,13 @@ export default function AppRoutes({ page, setPage }) {
   } else {
     return <NotFound onNavigate={setPage} />;
   }
+}
+
+export default function AppRoutes({ page, setPage }) {
+  const { isAuthed } = useAuth();
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#04050e]" />}>
+      <PageContent page={page} setPage={setPage} isAuthed={isAuthed} />
+    </Suspense>
+  );
 }

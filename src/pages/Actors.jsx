@@ -1,6 +1,70 @@
+import { useState, useEffect, useRef } from "react";
 import { Star, Users, Search } from "../components/icons";
 import { Reveal } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
+
+/* ── UniverseCanvas ─────────────────────────────────────── */
+function UniverseCanvas() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId, W, H;
+    let particles = [];
+    const resize = () => {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+      initParticles();
+    };
+    window.addEventListener("resize", resize);
+    const initParticles = () => {
+      particles = [];
+      const count = Math.floor((W * H) / 12000);
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+          r: 1 + Math.random() * 1.5, alpha: 0.2 + Math.random() * 0.5
+        });
+      }
+    };
+    resize();
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#04050e";
+      ctx.fillRect(0, 0, W, H);
+      const g1 = ctx.createRadialGradient(W * 0.2, H * 0.2, 0, W * 0.2, H * 0.2, W * 0.5);
+      g1.addColorStop(0, "rgba(45, 30, 150, 0.08)"); g1.addColorStop(1, "transparent");
+      ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
+      const g2 = ctx.createRadialGradient(W * 0.8, H * 0.8, 0, W * 0.8, H * 0.8, W * 0.5);
+      g2.addColorStop(0, "rgba(20, 150, 220, 0.06)"); g2.addColorStop(1, "transparent");
+      ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(167, 139, 250, ${(1 - dist / 140) * 0.15})`; ctx.lineWidth = 1; ctx.stroke();
+          }
+        }
+      }
+      particles.forEach((p) => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`; ctx.fill();
+        ctx.shadowBlur = 8; ctx.shadowColor = "rgba(167, 139, 250, 0.4)";
+      });
+      ctx.shadowBlur = 0;
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
+}
 
 // Only Google Maps Scraper is active ("chalu"). The rest are # placeholders.
 const ACTORS = [
@@ -28,28 +92,37 @@ export default function Actors({ onNavigate }) {
   const { username } = useAuth();
 
   return (
-    <section className="min-h-[calc(100vh-72px)] bg-slate-50">
-      {/* Header */}
-      <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-[1180px] px-6 py-8">
-          <p className="text-sm font-semibold text-brand-600">Welcome{username ? `, ${username}` : ""}</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink">Actors store</h1>
-          <p className="mt-2 max-w-xl text-slate-500">
-            Ready-made scrapers. Open <span className="font-semibold text-ink">Google Maps Scraper</span> to run it — the rest are coming soon.
-          </p>
+    <section className="relative min-h-[100dvh] w-full overflow-hidden bg-[#04050e] pt-[20px]">
+      <UniverseCanvas />
+      <div className="absolute top-0 left-0 w-full h-full bg-grid [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none opacity-20 z-[1]" />
 
-          <div className="mt-5 flex max-w-md items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-400">
-            <Search size={18} />
-            <span className="text-sm">Search 1,000+ actors…</span>
-          </div>
+      <div className="relative z-10 mx-auto max-w-[1250px] px-6 lg:px-8 pb-12">
+        {/* Header */}
+        <div className="mb-8">
+          <Reveal>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <h1 className="text-[46px] sm:text-[54px] font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-100 to-white/50 drop-shadow-xl leading-tight">
+                  Data Extraction <br className="hidden lg:block" /> Engines
+                </h1>
+              </div>
+
+              <div className="flex w-full max-w-sm items-center gap-3 rounded-full border border-white/20 bg-white/[0.03] backdrop-blur-xl px-5 py-3.5 text-white/50 shadow-[0_0_20px_rgba(109,94,252,0.1)] focus-within:border-brand-400 focus-within:shadow-[0_0_30px_rgba(109,94,252,0.3)] transition-all">
+                <Search size={20} className="text-white/70" />
+                <input
+                  type="text"
+                  placeholder="Search 1,000+ actors…"
+                  className="w-full bg-transparent outline-none text-white placeholder-white/40 font-medium text-[15px]"
+                />
+              </div>
+            </div>
+          </Reveal>
         </div>
-      </div>
 
-      {/* Grid */}
-      <div className="mx-auto max-w-[1180px] px-6 py-10">
+        {/* Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {ACTORS.map((a, i) => (
-            <Reveal key={a.id} delay={i * 60}>
+            <Reveal key={a.id} delay={i * 80}>
               <ActorCard actor={a} onOpen={() => a.active && onNavigate("console")} />
             </Reveal>
           ))}
@@ -60,11 +133,9 @@ export default function Actors({ onNavigate }) {
 }
 
 function ActorCard({ actor, onOpen }) {
-  const base =
-    "group flex h-full flex-col rounded-2xl border bg-white p-6 transition-all duration-200";
-  const active =
-    "border-slate-200 shadow-sm hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl cursor-pointer ring-1 ring-transparent hover:ring-brand-200";
-  const disabled = "border-slate-200 opacity-70";
+  const base = "group flex h-full flex-col rounded-[24px] border p-7 transition-all duration-300 relative overflow-hidden backdrop-blur-2xl";
+  const active = "border-white/20 bg-white/[0.04] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] hover:-translate-y-1.5 hover:border-brand-400 hover:bg-white/[0.06] hover:shadow-[0_15px_50px_-10px_rgba(109,94,252,0.3)] cursor-pointer";
+  const disabled = "border-white/10 bg-white/[0.02] opacity-70 grayscale-[30%]";
 
   const Wrapper = actor.active ? "button" : "a";
   const wrapperProps = actor.active
@@ -73,29 +144,34 @@ function ActorCard({ actor, onOpen }) {
 
   return (
     <Wrapper {...wrapperProps} className={`${base} ${actor.active ? active : disabled} text-left`}>
-      <div className="flex items-start justify-between">
-        <span className={`grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br ${actor.color} text-lg font-extrabold text-white shadow`}>
+      {/* Decorative Gradient Blob for active cards */}
+      {actor.active && (
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-500/20 rounded-full blur-[40px] pointer-events-none group-hover:bg-brand-500/40 transition-all duration-500"></div>
+      )}
+
+      <div className="flex items-start justify-between relative z-10">
+        <span className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${actor.color} text-xl font-extrabold text-white shadow-lg shadow-black/20`}>
           {actor.letter}
         </span>
         {actor.active ? (
-          <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600">Available</span>
+          <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1.5 text-[12px] font-extrabold text-emerald-400 uppercase tracking-wider shadow-[0_0_15px_rgba(16,185,129,0.3)]">Available</span>
         ) : (
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-400">Soon</span>
+          <span className="rounded-full bg-white/10 border border-white/10 px-3 py-1.5 text-[12px] font-bold text-white/50 uppercase tracking-wider">Soon</span>
         )}
       </div>
 
-      <h3 className="mt-4 text-lg font-bold text-ink">{actor.name}</h3>
-      <p className="text-xs font-medium text-slate-400">{actor.slug}</p>
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-500">{actor.desc}</p>
+      <h3 className="mt-6 text-[22px] font-bold text-white relative z-10">{actor.name}</h3>
+      <p className="text-[13px] font-medium text-brand-300 mt-1 relative z-10">{actor.slug}</p>
+      <p className="mt-4 flex-1 text-[15px] leading-relaxed text-white/60 relative z-10">{actor.desc}</p>
 
-      <div className="mt-5 flex items-center gap-4 border-t border-slate-100 pt-4 text-sm text-slate-500">
-        <span className="font-semibold text-ink">{actor.author}</span>
-        <span className="ml-auto inline-flex items-center gap-1 text-amber-500">
-          <Star size={14} fill="currentColor" /> <span className="font-semibold">{actor.rating}</span>
-          <span className="text-slate-400">({actor.reviews})</span>
+      <div className="mt-6 flex items-center gap-4 border-t border-white/10 pt-5 text-[14px] text-white/50 relative z-10">
+        <span className="font-semibold text-white/80">{actor.author}</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 text-orange-400 font-bold">
+          <Star size={15} fill="currentColor" /> <span>{actor.rating}</span>
+          <span className="text-white/40 font-medium">({actor.reviews})</span>
         </span>
-        <span className="inline-flex items-center gap-1 text-slate-400">
-          <Users size={14} /> {actor.users}
+        <span className="inline-flex items-center gap-1.5 text-white/50 font-medium">
+          <Users size={15} /> {actor.users}
         </span>
       </div>
     </Wrapper>

@@ -19,17 +19,26 @@ function UniverseCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    let animId, W, H;
+    let animId, W, H, lastTime = 0;
     let particles = [];
+    let cachedG1, cachedG2;
+
+    const buildGradients = () => {
+      cachedG1 = ctx.createRadialGradient(W*0.2, H*0.2, 0, W*0.2, H*0.2, W*0.5);
+      cachedG1.addColorStop(0, "rgba(45, 30, 150, 0.08)"); cachedG1.addColorStop(1, "transparent");
+      cachedG2 = ctx.createRadialGradient(W*0.8, H*0.8, 0, W*0.8, H*0.8, W*0.5);
+      cachedG2.addColorStop(0, "rgba(20, 150, 220, 0.06)"); cachedG2.addColorStop(1, "transparent");
+    };
     const resize = () => {
       W = canvas.width  = canvas.offsetWidth;
       H = canvas.height = canvas.offsetHeight;
+      buildGradients();
       initParticles();
     };
     window.addEventListener("resize", resize);
     const initParticles = () => {
       particles = [];
-      const count = Math.floor((W * H) / 12000); 
+      const count = Math.floor((W * H) / 14000);
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * W, y: Math.random() * H,
@@ -39,22 +48,22 @@ function UniverseCanvas() {
       }
     };
     resize();
-    const draw = () => {
+    const MAX_DIST_SQ = 140 * 140;
+    const draw = (timestamp) => {
+      animId = requestAnimationFrame(draw);
+      if (timestamp - lastTime < 32) return; // ~30fps cap
+      lastTime = timestamp;
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = "#04050e";
-      ctx.fillRect(0, 0, W, H);
-      const g1 = ctx.createRadialGradient(W*0.2, H*0.2, 0, W*0.2, H*0.2, W*0.5);
-      g1.addColorStop(0, "rgba(45, 30, 150, 0.08)"); g1.addColorStop(1, "transparent");
-      ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
-      const g2 = ctx.createRadialGradient(W*0.8, H*0.8, 0, W*0.8, H*0.8, W*0.5);
-      g2.addColorStop(0, "rgba(20, 150, 220, 0.06)"); g2.addColorStop(1, "transparent");
-      ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#04050e"; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = cachedG1; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = cachedG2; ctx.fillRect(0, 0, W, H);
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 140) {
+          const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+          const distSq = dx * dx + dy * dy;
+          if (distSq < MAX_DIST_SQ) {
             ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(167, 139, 250, ${(1 - dist / 140) * 0.15})`; ctx.lineWidth = 1; ctx.stroke();
+            ctx.strokeStyle = `rgba(167, 139, 250, ${(1 - Math.sqrt(distSq) / 140) * 0.15})`; ctx.lineWidth = 1; ctx.stroke();
           }
         }
       }
@@ -64,12 +73,9 @@ function UniverseCanvas() {
         if (p.y < 0 || p.y > H) p.vy *= -1;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`; ctx.fill();
-        ctx.shadowBlur = 8; ctx.shadowColor = "rgba(167, 139, 250, 0.4)";
       });
-      ctx.shadowBlur = 0;
-      animId = requestAnimationFrame(draw);
     };
-    draw();
+    animId = requestAnimationFrame(draw);
     return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, []);
   return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
@@ -133,7 +139,7 @@ export default function Login({ onNavigate, initialMode = "login" }) {
             {/* Glowing Orange Middle Line */}
             <div className="absolute right-0 top-[5%] h-[90%] w-[1px] bg-gradient-to-b from-transparent via-orange-500 to-transparent shadow-[0_0_15px_rgba(249,115,22,0.9)] opacity-80"></div>
             
-            <img src="/login-illustration.png" alt="Relaxing with laptop" className="w-full max-w-[340px] drop-shadow-[0_0_40px_rgba(255,100,50,0.2)] animate-[float_6s_ease-in-out_infinite]" />
+            <img src="/login-illustration.png" alt="Relaxing with laptop" loading="lazy" width="340" height="340" className="w-full max-w-[340px] drop-shadow-[0_0_40px_rgba(255,100,50,0.2)] animate-[float_6s_ease-in-out_infinite]" />
           </div>
 
           {/* Right Side: Form Area */}

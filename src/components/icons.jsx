@@ -42,9 +42,10 @@ export const Code = (p) => (<Svg {...p}><path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />
 export const Linkedin = (p) => (<Svg {...p}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-12h4v1.5A6 6 0 0 1 16 8ZM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Z" /></Svg>);
 export const Twitter = (p) => (<Svg {...p}><path d="M22 4c-1 .5-2 .8-3 1a4.7 4.7 0 0 0-8 3v1A11 11 0 0 1 3 5s-4 9 5 13a11.6 11.6 0 0 1-7 2c9 5 20 0 20-11.5 0-.3 0-.6-.1-.8A8 8 0 0 0 22 4Z" /></Svg>);
 export const Github = (p) => (<Svg {...p}><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 20 4.8a4.8 4.8 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C7 1 5.9 1.2 5.9 1.2A4.8 4.8 0 0 0 5.8 4.8 5.2 5.2 0 0 0 4.4 8.5c0 5.1 3.1 6.4 6.1 6.7a3.4 3.4 0 0 0-.9 2.5V22" /></Svg>);
+export const Play = (p) => (<Svg {...p}><polygon points="5 3 19 12 5 21 5 3" /></Svg>);
 
 export default {
   Search, MapPin, Mail, Phone, Globe, Star, Zap, Download, Shield, Filter,
   Users, Target, Sparkles, Check, ArrowRight, Menu, X, Building, Clock,
-  Database, Rocket, Heart, Code, Linkedin, Twitter, Github,
+  Database, Rocket, Heart, Code, Linkedin, Twitter, Github, Play,
 };

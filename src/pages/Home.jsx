@@ -396,26 +396,35 @@ function UniverseCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    let animId;
-    let W, H;
+    let animId, W, H, lastTime = 0;
     let particles = [];
+    let cachedG1, cachedG2;
+
+    const buildGradients = () => {
+      cachedG1 = ctx.createRadialGradient(W*0.2, H*0.2, 0, W*0.2, H*0.2, W*0.5);
+      cachedG1.addColorStop(0, "rgba(45, 30, 150, 0.08)");
+      cachedG1.addColorStop(1, "transparent");
+      cachedG2 = ctx.createRadialGradient(W*0.8, H*0.8, 0, W*0.8, H*0.8, W*0.5);
+      cachedG2.addColorStop(0, "rgba(20, 150, 220, 0.06)");
+      cachedG2.addColorStop(1, "transparent");
+    };
 
     const resize = () => {
       W = canvas.width  = canvas.offsetWidth;
       H = canvas.height = canvas.offsetHeight;
+      buildGradients();
       initParticles();
     };
     window.addEventListener("resize", resize);
 
     const initParticles = () => {
       particles = [];
-      // Fewer particles for a cleaner, professional look
-      const count = Math.floor((W * H) / 12000); 
+      const count = Math.floor((W * H) / 14000);
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * W,
           y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.3, // Very slow drift
+          vx: (Math.random() - 0.5) * 0.3,
           vy: (Math.random() - 0.5) * 0.3,
           r: 1 + Math.random() * 1.5,
           alpha: 0.2 + Math.random() * 0.5
@@ -425,70 +434,49 @@ function UniverseCanvas() {
 
     resize();
 
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
+    const MAX_DIST_SQ = 140 * 140;
+    const draw = (timestamp) => {
+      animId = requestAnimationFrame(draw);
+      if (timestamp - lastTime < 32) return; // ~30fps cap
+      lastTime = timestamp;
 
-      // Deep premium background
+      ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = "#04050e";
       ctx.fillRect(0, 0, W, H);
-
-      // Subtle aurora/gradient glows in the corners
-      const g1 = ctx.createRadialGradient(W*0.2, H*0.2, 0, W*0.2, H*0.2, W*0.5);
-      g1.addColorStop(0, "rgba(45, 30, 150, 0.08)");
-      g1.addColorStop(1, "transparent");
-      ctx.fillStyle = g1;
+      ctx.fillStyle = cachedG1;
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = cachedG2;
       ctx.fillRect(0, 0, W, H);
 
-      const g2 = ctx.createRadialGradient(W*0.8, H*0.8, 0, W*0.8, H*0.8, W*0.5);
-      g2.addColorStop(0, "rgba(20, 150, 220, 0.06)");
-      g2.addColorStop(1, "transparent");
-      ctx.fillStyle = g2;
-      ctx.fillRect(0, 0, W, H);
-
-      // Draw constellation lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (dist < 140) {
+          const distSq = dx * dx + dy * dy;
+          if (distSq < MAX_DIST_SQ) {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            // Opacity based on distance
-            const alpha = (1 - dist / 140) * 0.15;
-            ctx.strokeStyle = `rgba(167, 139, 250, ${alpha})`; // Subtle violet tint
+            ctx.strokeStyle = `rgba(167, 139, 250, ${(1 - Math.sqrt(distSq) / 140) * 0.15})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
         }
       }
 
-      // Draw nodes
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
-
-        // Bounce off edges gently
         if (p.x < 0 || p.x > W) p.vx *= -1;
         if (p.y < 0 || p.y > H) p.vy *= -1;
-
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
         ctx.fill();
-        
-        // Slight glow on nodes
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = "rgba(167, 139, 250, 0.4)";
       });
-      ctx.shadowBlur = 0; // reset
-
-      animId = requestAnimationFrame(draw);
     };
 
-    draw();
+    animId = requestAnimationFrame(draw);
 
     return () => {
       cancelAnimationFrame(animId);

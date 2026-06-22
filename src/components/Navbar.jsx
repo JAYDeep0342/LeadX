@@ -23,7 +23,7 @@ const NAV_LINKS = [
 export default function Navbar({ current, onNavigate }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { isAuthed, logout } = useAuth();
+  const { isAuthed, logout, username } = useAuth();
 
   /* scroll shadow */
   useEffect(() => {
@@ -75,7 +75,14 @@ export default function Navbar({ current, onNavigate }) {
           <div className="leadx-cta">
             {isAuthed ? (
               <>
-                <button className="cta-ghost" onClick={() => go("dashboard")}>Dashboard</button>
+                <button className="group flex items-center p-[3px] bg-transparent border border-white/30 hover:bg-white/10 hover:border-white/60 rounded-full transition-all duration-300 overflow-hidden w-10 hover:w-[150px] h-10" onClick={() => go("dashboard")}>
+                  <div className="w-8 h-8 shrink-0 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/40 flex items-center justify-center font-extrabold text-[14px] shadow-[0_0_10px_rgba(109,94,252,0.3)]">
+                    {username ? username.charAt(0).toUpperCase() : "U"}
+                  </div>
+                  <span className="whitespace-nowrap font-semibold text-white/90 text-[14px] pl-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
+                    Hi, {username || "User"}
+                  </span>
+                </button>
                 <button className="cta-outline" onClick={() => { logout(); go("home"); }}>Log out</button>
               </>
             ) : (
