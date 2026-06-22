@@ -47,6 +47,31 @@ const LinkedinMark = (props) => (
   </svg>
 );
 
+const SalesforceMark = (props) => (
+  <svg viewBox="0 0 24 24" {...props}>
+    <path fill="#00A1E0" d="M16.5 9c-1.3 0-2.4.9-2.8 2.1-.5-.5-1.2-.8-1.9-.8-1.3 0-2.4.9-2.7 2.1C8.7 11.2 8.5 11 8 11c-1.4 0-2.5 1.1-2.5 2.5S6.6 16 8 16h8.5c1.7 0 3-1.3 3-3s-1.3-3-3-3c-.1 0-.3 0-.4.1C15.7 8.9 16.1 8 16.5 9z"/>
+  </svg>
+);
+
+const ZillowMark = (props) => (
+  <svg viewBox="0 0 24 24" {...props}>
+    <path fill="#006AFF" d="M12 2.5L2.5 10h3v11h13V10h3L12 2.5z" />
+    <path stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" d="M9 12h6l-6 5h6" />
+  </svg>
+);
+
+const ShopifyMark = (props) => (
+  <svg viewBox="0 0 24 24" {...props}>
+    <path fill="#95BF47" d="M18.8 7.3c-.2-1.3-1.3-2.3-2.6-2.5-1.2-.2-2.3.6-2.6 1.8h-3.2c-.3-1.2-1.4-2-2.6-1.8-1.3.2-2.4 1.2-2.6 2.5L3.9 19c-.2 1.3.8 2.5 2.1 2.5h12c1.3 0 2.3-1.2 2.1-2.5l-1.3-11.7zM10.8 7.3c.1-.5.6-.9 1.1-1 .5-.1 1 .2 1.1.7h-2.2z"/>
+  </svg>
+);
+
+const LinkedinBrandMark = (props) => (
+  <svg viewBox="0 0 24 24" fill="#0A66C2" {...props}>
+    <path d="M6.94 5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0zM3.5 8.5h3v12h-3v-12zm5 0h2.87v1.64h.04c.4-.76 1.38-1.56 2.84-1.56 3.04 0 3.6 2 3.6 4.6v7.32h-3v-6.49c0-1.55-.03-3.54-2.16-3.54-2.16 0-2.49 1.69-2.49 3.43v6.6h-3v-12z" />
+  </svg>
+);
+
 // Minimal Premium Button Component (inlining for perfect control)
 const PremiumButton = ({ children, primary, onClick, icon }) => (
   <button
@@ -244,12 +269,60 @@ function WorkflowBento() {
 }
 
 const INDUSTRIES = [
-  { icon: TrendingUp, title: "Sales & SDR teams", desc: "Fill the top of your funnel every morning." },
-  { icon: Briefcase, title: "Marketing agencies", desc: "Targeted lists for every client, on demand." },
-  { icon: Building2, title: "Real estate", desc: "Reach property managers and local agents first." },
-  { icon: Users, title: "Recruiting & staffing", desc: "Source companies and candidates at scale." },
-  { icon: Tag, title: "E-commerce & retail", desc: "Watch competitor catalogs and pricing." },
-  { icon: MapPin, title: "Local services", desc: "Win clinics, gyms and salons in your area." }
+  { 
+    icon: SalesforceMark, 
+    title: "Sales & SDR teams", 
+    desc: "Fill the top of your funnel every morning.",
+    bg: "bg-[#00A1E0]/10",
+    text: "text-[#00A1E0]",
+    shadow: "shadow-[0_10px_40px_-10px_rgba(0,161,224,0.3)] hover:shadow-[0_20px_50px_-15px_rgba(0,161,224,0.6)]",
+    gradient: "from-[#00A1E0] to-[#0089C0]"
+  },
+  { 
+    icon: FacebookMark, 
+    title: "Marketing agencies", 
+    desc: "Targeted lists for every client, on demand.",
+    bg: "bg-[#1877F2]/10",
+    text: "text-[#1877F2]",
+    shadow: "shadow-[0_10px_40px_-10px_rgba(24,119,242,0.3)] hover:shadow-[0_20px_50px_-15px_rgba(24,119,242,0.6)]",
+    gradient: "from-[#1877F2] to-[#165EBE]"
+  },
+  { 
+    icon: ZillowMark, 
+    title: "Real estate", 
+    desc: "Reach property managers and local agents first.",
+    bg: "bg-[#006AFF]/10",
+    text: "text-[#006AFF]",
+    shadow: "shadow-[0_10px_40px_-10px_rgba(0,106,255,0.3)] hover:shadow-[0_20px_50px_-15px_rgba(0,106,255,0.6)]",
+    gradient: "from-[#006AFF] to-[#0055CC]"
+  },
+  { 
+    icon: LinkedinBrandMark, 
+    title: "Recruiting & staffing", 
+    desc: "Source companies and candidates at scale.",
+    bg: "bg-[#0A66C2]/10",
+    text: "text-[#0A66C2]",
+    shadow: "shadow-[0_10px_40px_-10px_rgba(10,102,194,0.3)] hover:shadow-[0_20px_50px_-15px_rgba(10,102,194,0.6)]",
+    gradient: "from-[#0A66C2] to-[#08509E]"
+  },
+  { 
+    icon: ShopifyMark, 
+    title: "E-commerce & retail", 
+    desc: "Watch competitor catalogs and pricing.",
+    bg: "bg-[#95BF47]/10",
+    text: "text-[#95BF47]",
+    shadow: "shadow-[0_10px_40px_-10px_rgba(149,191,71,0.3)] hover:shadow-[0_20px_50px_-15px_rgba(149,191,71,0.6)]",
+    gradient: "from-[#95BF47] to-[#7EA338]"
+  },
+  { 
+    icon: GoogleMapsMark, 
+    title: "Local services", 
+    desc: "Win clinics, gyms and salons in your area.",
+    bg: "bg-[#EA4335]/10",
+    text: "text-[#EA4335]",
+    shadow: "shadow-[0_10px_40px_-10px_rgba(234,67,53,0.3)] hover:shadow-[0_20px_50px_-15px_rgba(234,67,53,0.6)]",
+    gradient: "from-[#EA4335] to-[#C5221F]"
+  }
 ];
 
 const COMPARISON = [
@@ -553,23 +626,35 @@ export default function Solution({ onNavigate }) {
       <WorkflowBento />
 
       {/* 3) BY INDUSTRY */}
-      <section className="py-24 bg-white border-y border-slate-200">
-        <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
-          <div className="mb-16 text-center">
-            <h2 className="text-[32px] font-bold tracking-tight text-slate-900 mb-4">Trusted across industries</h2>
-            <p className="text-[16px] text-slate-500 font-medium mx-auto max-w-xl">From local agencies to global sales teams, LeadX powers growth across every sector imaginable.</p>
+      <section className="relative py-32 bg-white border-y border-slate-200 overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-slate-50 to-transparent opacity-60 pointer-events-none" />
+        
+        <div className="relative mx-auto max-w-[1180px] px-6 lg:px-8">
+          <div className="mb-20 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white border border-slate-200 px-3 py-1 text-[12px] font-semibold text-slate-600 mb-5 shadow-sm">
+              <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+              Trusted across the globe
+            </div>
+            <h2 className="text-[36px] sm:text-[42px] font-extrabold tracking-tight text-slate-900 mb-5">Built for every industry</h2>
+            <p className="text-[18px] text-slate-500 font-medium mx-auto max-w-2xl leading-relaxed">From local agencies to global sales teams, LeadX powers growth across every sector imaginable.</p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {INDUSTRIES.map((ind, i) => (
-              <div key={i} className="flex items-start gap-4 rounded-xl border border-slate-100 bg-slate-50 p-6 transition-colors hover:bg-slate-100/50">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white border border-slate-200 text-slate-500 shadow-sm">
-                  <ind.icon className="h-4 w-4" />
+              <div 
+                key={i} 
+                className={`group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 transition-all duration-500 hover:-translate-y-2 hover:bg-[#0f172a] hover:border-slate-800 ${ind.shadow}`}
+              >
+                {/* Glowing orb effect on hover */}
+                <div className={`absolute -right-16 -top-16 h-48 w-48 rounded-full blur-[50px] opacity-0 transition-opacity duration-500 group-hover:opacity-30 bg-gradient-to-br ${ind.gradient} pointer-events-none`}></div>
+                
+                <div className={`relative z-10 mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl ${ind.bg} ${ind.text} transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 group-hover:bg-white/10 group-hover:text-white shadow-sm border border-slate-100 group-hover:border-white/10`}>
+                  <ind.icon className="h-6 w-6" />
                 </div>
-                <div>
-                  <h4 className="font-semibold text-slate-900 text-[14px] mb-1">{ind.title}</h4>
-                  <p className="text-[13px] text-slate-500 leading-relaxed">{ind.desc}</p>
-                </div>
+                
+                <h4 className="relative z-10 mb-3 text-[19px] font-bold text-slate-900 transition-colors duration-500 group-hover:text-white">{ind.title}</h4>
+                <p className="relative z-10 text-[15px] leading-relaxed text-slate-500 font-medium transition-colors duration-500 group-hover:text-slate-400">{ind.desc}</p>
               </div>
             ))}
           </div>
@@ -577,40 +662,66 @@ export default function Solution({ onNavigate }) {
       </section>
 
       {/* 4) COMPARISON TABLE */}
-      <section className="py-24 bg-slate-50">
-        <div className="mx-auto max-w-[900px] px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-[32px] font-bold tracking-tight text-slate-900 mb-4">Manual research vs LeadX</h2>
-            <p className="text-[16px] text-slate-500 font-medium">Stop wasting hours building lists by hand.</p>
-          </div>
+      <section className="py-24 bg-slate-50 relative overflow-hidden">
+        <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
+          <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+            
+            {/* Left side: Table */}
+            <div className="w-full lg:w-[60%] lg:-mt-4">
+              <div className="relative overflow-x-auto overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-[0_25px_50px_-12px_rgba(15,23,42,0.25)]">
+                {/* LeadX column highlight backdrop */}
+                <div className="absolute right-0 top-0 bottom-0 w-[33.33%] bg-gradient-to-b from-blue-50/80 to-blue-50/20 pointer-events-none border-l-2 border-blue-200" />
+                
+                <table className="w-full text-left relative z-10 border-collapse min-w-[550px]">
+                  <thead>
+                    <tr>
+                      <th className="border-b-2 border-r border-slate-300 px-5 py-5 text-[12px] font-bold uppercase tracking-widest text-slate-500 w-1/3 bg-white align-middle">Feature</th>
+                      <th className="border-b-2 border-r border-slate-300 px-5 py-5 text-[12px] font-bold uppercase tracking-widest text-slate-500 w-1/3 bg-white text-center align-middle">Manual Process</th>
+                      <th className="border-b-2 border-blue-200 px-5 py-5 w-1/3 bg-blue-50/80 relative text-center align-middle">
+                        <div className="absolute top-0 left-0 right-0 h-1.5 bg-blue-600" />
+                        <div className="inline-flex items-center justify-center gap-2 text-[14px] font-extrabold text-blue-700 uppercase tracking-wider">
+                          <span className="flex h-5 w-5 items-center justify-center rounded bg-blue-600 text-white shadow-sm">
+                            <Check className="h-3.5 w-3.5" />
+                          </span>
+                          LeadX
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-300">
+                    {COMPARISON.map((row, i) => (
+                      <tr key={i} className="group hover:bg-slate-50/60 transition-colors">
+                        <td className="px-5 py-4 text-[13px] font-semibold text-slate-700 bg-white border-r border-slate-300 align-middle">{row.label}</td>
+                        <td className="px-5 py-4 text-[13px] text-slate-600 bg-white border-r border-slate-300 align-middle text-center">
+                          <div className="inline-flex items-center justify-center gap-2">
+                            <X className="h-4 w-4 text-slate-400 shrink-0" />
+                            <span>{row.manual}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 text-[14px] font-bold text-slate-900 group-hover:bg-blue-50/60 transition-colors border-l-2 border-blue-200 align-middle text-center">
+                          <div className="inline-flex items-center justify-center gap-2">
+                            <Check className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span>{row.leadx}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr>
-                  <th className="border-b border-slate-200 bg-white px-6 py-4 text-[12px] font-semibold uppercase tracking-wider text-slate-400 w-1/3">Feature</th>
-                  <th className="border-b border-slate-200 bg-white px-6 py-4 text-[12px] font-semibold uppercase tracking-wider text-slate-400 w-1/3">Manual</th>
-                  <th className="border-b border-slate-200 bg-slate-900 px-6 py-4 text-[12px] font-semibold uppercase tracking-wider text-white w-1/3">LeadX</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {COMPARISON.map((row, i) => (
-                  <tr key={i} className="group transition-colors hover:bg-slate-50">
-                    <td className="px-6 py-4 text-[13px] font-semibold text-slate-700">{row.label}</td>
-                    <td className="px-6 py-4 text-[13px] text-slate-500 flex items-center gap-2">
-                      <X className="h-3.5 w-3.5 text-slate-300" />
-                      {row.manual}
-                    </td>
-                    <td className="px-6 py-4 text-[13px] font-medium text-slate-900 bg-slate-50/50 group-hover:bg-slate-100/50 transition-colors border-l border-slate-100">
-                      <div className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0" />
-                        {row.leadx}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* Right side: Text Area */}
+            <div className="w-full lg:w-[40%] flex flex-col justify-center items-start text-left lg:pt-8">
+              <h2 className="text-[34px] sm:text-[40px] font-bold tracking-tight text-slate-900 mb-5 leading-[1.15]">
+                Manual research <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">vs LeadX</span>
+              </h2>
+              <p className="text-[16px] sm:text-[18px] leading-relaxed text-slate-500 font-medium max-w-md">
+                Stop wasting hours building lists by hand. Get structured, accurate, and export-ready pipelines in seconds.
+              </p>
+            </div>
+
           </div>
         </div>
       </section>
@@ -618,35 +729,7 @@ export default function Solution({ onNavigate }) {
       {/* 5) LIVE REAL-TIME SCRAPE DEMO */}
       <LiveScrapeDemo />
 
-      {/* 6) TRUST BAND */}
-      <section className="py-20 bg-slate-50">
-        <div className="mx-auto max-w-[1180px] px-6 lg:px-8">
-          <div className="grid gap-10 md:grid-cols-3 md:gap-8 lg:gap-12 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-            <div className="flex flex-col pt-10 md:pt-0 md:px-6 first:pt-0">
-              <div className="mb-4 flex items-center gap-6">
-                <div><div className="text-2xl font-bold text-slate-900">2.5M+</div><div className="text-[12px] font-medium text-slate-500 uppercase tracking-wide mt-1">Leads scraped</div></div>
-                <div className="h-10 w-px bg-slate-200" />
-                <div><div className="text-2xl font-bold text-slate-900">8s</div><div className="text-[12px] font-medium text-slate-500 uppercase tracking-wide mt-1">Avg response</div></div>
-              </div>
-              <p className="text-[13px] leading-relaxed text-slate-500">Delivering reliable data at scale, with 99.9% uptime and 13 rich data points per lead.</p>
-            </div>
-            <div className="flex flex-col pt-10 md:pt-0 md:px-6">
-              <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 shadow-sm">
-                <Shield className="h-4 w-4 text-slate-600" />
-              </div>
-              <h4 className="font-semibold text-slate-900 text-[14px] mb-2">Secure by design</h4>
-              <p className="text-[13px] leading-relaxed text-slate-500">JWT-protected accounts, encrypted access, and your data stays yours. Built on a hardened Spring Boot backend.</p>
-            </div>
-            <div className="flex flex-col pt-10 md:pt-0 md:px-6">
-              <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 shadow-sm">
-                <Download className="h-4 w-4 text-slate-600" />
-              </div>
-              <h4 className="font-semibold text-slate-900 text-[14px] mb-2">Export anywhere</h4>
-              <p className="text-[13px] leading-relaxed text-slate-500">CSV, Excel, JSON and Google Sheets today; HubSpot, Salesforce & Zapier coming soon.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
     </div>
   );

@@ -1,24 +1,91 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { Button, Spinner } from "../components/ui";
-import { MapPin, Check, Zap, Shield, Database } from "../components/icons";
+import { Mail } from "../components/icons";
+import { Spinner } from "../components/ui";
 
-const PERKS = [
-  { icon: Zap, text: "Scrape Google Maps leads in seconds" },
-  { icon: Database, text: "13 enriched data points per lead" },
-  { icon: Shield, text: "Secure, JWT-protected access" },
-];
+/* ── Inline SVG ─────────────────────────────────────────────── */
+const Lock = ({ size = 24, className = "", ...p }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...p}>
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
 
+/* ── UniverseCanvas ─────────────────────────────────────── */
+function UniverseCanvas() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId, W, H;
+    let particles = [];
+    const resize = () => {
+      W = canvas.width  = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+      initParticles();
+    };
+    window.addEventListener("resize", resize);
+    const initParticles = () => {
+      particles = [];
+      const count = Math.floor((W * H) / 12000); 
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * W, y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+          r: 1 + Math.random() * 1.5, alpha: 0.2 + Math.random() * 0.5
+        });
+      }
+    };
+    resize();
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#04050e";
+      ctx.fillRect(0, 0, W, H);
+      const g1 = ctx.createRadialGradient(W*0.2, H*0.2, 0, W*0.2, H*0.2, W*0.5);
+      g1.addColorStop(0, "rgba(45, 30, 150, 0.08)"); g1.addColorStop(1, "transparent");
+      ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
+      const g2 = ctx.createRadialGradient(W*0.8, H*0.8, 0, W*0.8, H*0.8, W*0.5);
+      g2.addColorStop(0, "rgba(20, 150, 220, 0.06)"); g2.addColorStop(1, "transparent");
+      ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(167, 139, 250, ${(1 - dist / 140) * 0.15})`; ctx.lineWidth = 1; ctx.stroke();
+          }
+        }
+      }
+      particles.forEach((p) => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`; ctx.fill();
+        ctx.shadowBlur = 8; ctx.shadowColor = "rgba(167, 139, 250, 0.4)";
+      });
+      ctx.shadowBlur = 0;
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
+}
+
+
+/* ── Login Component ─────────────────────────────────────── */
 export default function Login({ onNavigate, initialMode = "login" }) {
   const { login } = useAuth();
   const [mode, setMode] = useState(initialMode);
-  const [form, setForm] = useState({ name: "", email: "", username: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", username: "", password: "", remember: true });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const isSignup = mode === "signup";
-  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
 
   const switchMode = (m) => {
     setMode(m);
@@ -50,135 +117,98 @@ export default function Login({ onNavigate, initialMode = "login" }) {
   };
 
   return (
-    <section className="grid min-h-[calc(100vh-72px)] lg:grid-cols-2">
-      {/* Left brand panel */}
-      <div className="relative hidden overflow-hidden bg-aurora p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <div className="pointer-events-none absolute -right-16 top-10 h-72 w-72 animate-float rounded-full bg-brand-500/30 blur-[90px]" />
-        <div className="pointer-events-none absolute bottom-10 -left-10 h-64 w-64 animate-float-slow rounded-full bg-cyan-500/20 blur-[90px]" />
+    <section className="hero-universe relative min-h-[100dvh] flex items-center justify-center overflow-hidden w-full !pt-[100px] !pb-[40px]">
+      <UniverseCanvas />
+      <div className="hero-overlay-top" />
+      <div className="hero-overlay-bottom" />
+      <div className="absolute top-0 left-0 w-full h-full bg-grid [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none opacity-20 z-[1]" />
 
-        <button onClick={() => onNavigate("home")} className="relative flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand-500 via-violet-500 to-cyan-500 shadow-lg">
-            <MapPin size={22} />
-          </span>
-          <span className="text-xl font-extrabold tracking-tight">LeadScout</span>
-        </button>
-
-        <div className="relative">
-          <h2 className="text-4xl font-extrabold leading-tight tracking-tight">
-            Turn the map into your <span className="text-gradient">pipeline</span>
-          </h2>
-          <p className="mt-4 max-w-md text-lg text-slate-300">
-            Find, enrich and export local business leads — all from a single search.
-          </p>
-          <ul className="mt-8 grid gap-4">
-            {PERKS.map((p) => (
-              <li key={p.text} className="flex items-center gap-3 text-slate-200">
-                <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/10 text-cyan-300">
-                  <p.icon size={18} />
-                </span>
-                {p.text}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <p className="relative text-sm text-slate-400">© {new Date().getFullYear()} BDM Infotech · LeadScout</p>
-      </div>
-
-      {/* Right form */}
-      <div className="flex items-center justify-center bg-slate-50 px-6 py-14">
-        <div className="w-full max-w-md animate-pop">
-          <div className="mb-7 text-center lg:hidden">
-            <button onClick={() => onNavigate("home")} className="inline-flex items-center gap-2 text-lg font-extrabold text-ink">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-cyan-500 text-white">
-                <MapPin size={18} />
-              </span>
-              LeadScout
-            </button>
+      <div className="relative mx-auto w-full max-w-[950px] px-6 z-10 flex items-center justify-center">
+        
+        {/* The SINGLE Large Glassy Frame */}
+        <div className="w-full rounded-[2.5rem] border border-white/30 bg-[#0a0e1f]/60 backdrop-blur-3xl shadow-[0_0_60px_rgba(109,94,252,0.25),0_30px_80px_-15px_rgba(0,0,0,0.9)] relative overflow-hidden flex flex-col lg:flex-row ring-1 ring-white/10 animate-[rise_0.8s_ease_out_both]">
+          
+          {/* Left Side: Custom Generated Illustration */}
+          <div className="flex-1 w-full hidden lg:flex flex-col items-center justify-center p-6 lg:p-8 relative z-10 bg-black/20">
+            {/* Glowing Orange Middle Line */}
+            <div className="absolute right-0 top-[5%] h-[90%] w-[1px] bg-gradient-to-b from-transparent via-orange-500 to-transparent shadow-[0_0_15px_rgba(249,115,22,0.9)] opacity-80"></div>
+            
+            <img src="/login-illustration.png" alt="Relaxing with laptop" className="w-full max-w-[340px] drop-shadow-[0_0_40px_rgba(255,100,50,0.2)] animate-[float_6s_ease-in-out_infinite]" />
           </div>
 
-          {/* Tab switch */}
-          <div className="mb-7 grid grid-cols-2 gap-1 rounded-xl bg-slate-200/70 p-1">
-            {[
-              { id: "login", label: "Sign in" },
-              { id: "signup", label: "Create account" },
-            ].map((t) => (
-              <button
-                key={t.id}
-                onClick={() => switchMode(t.id)}
-                className={`rounded-lg py-2.5 text-sm font-semibold transition-all ${
-                  mode === t.id ? "bg-white text-brand-600 shadow-sm" : "text-slate-500 hover:text-ink"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">
-            {isSignup ? "Create your account" : "Welcome back"}
+          {/* Right Side: Form Area */}
+          <div className="w-full lg:w-[450px] flex flex-col p-6 sm:p-8 z-10 shrink-0 bg-white/[0.02]">
+          
+          <h1 className="text-[32px] font-extrabold text-white text-center mb-6 tracking-tight drop-shadow-md">
+            {isSignup ? "Register" : "Login"}
           </h1>
-          <p className="mt-1 text-[15px] text-slate-500">
-            {isSignup ? "Start scraping leads in under a minute." : "Sign in to your LeadScout dashboard."}
-          </p>
 
           {error && (
-            <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-[14px] font-medium text-red-400">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            
             {isSignup && (
-              <>
-                <Field label="Full name">
-                  <input required value={form.name} onChange={set("name")} placeholder="Jane Cooper" className={inputCls} />
-                </Field>
-                <Field label="Email">
-                  <input required type="email" value={form.email} onChange={set("email")} placeholder="jane@company.com" className={inputCls} />
-                </Field>
-              </>
+              <div className="relative">
+                <input required value={form.name} onChange={set("name")} placeholder="Full Name" className="w-full bg-transparent border-b-2 border-white/30 py-2.5 pr-10 text-[15px] text-white placeholder-white outline-none focus:border-white transition-colors" />
+              </div>
             )}
-            <Field label="Username">
-              <input required value={form.username} onChange={set("username")} placeholder="janecooper" autoComplete="username" className={inputCls} />
-            </Field>
-            <Field label="Password">
-              <input required type="password" value={form.password} onChange={set("password")} placeholder="••••••••" autoComplete={isSignup ? "new-password" : "current-password"} className={inputCls} />
-            </Field>
 
-            <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
+            {isSignup && (
+              <div className="relative">
+                <input required type="email" value={form.email} onChange={set("email")} placeholder="Email" className="w-full bg-transparent border-b-2 border-white/30 py-2.5 pr-10 text-[15px] text-white placeholder-white outline-none focus:border-white transition-colors" />
+                <Mail size={18} className="absolute right-2 top-3 text-white" />
+              </div>
+            )}
+
+            <div className="relative">
+              <input required value={form.username} onChange={set("username")} placeholder={isSignup ? "Username" : "Email"} autoComplete="username" className="w-full bg-transparent border-b-2 border-white/30 py-2.5 pr-10 text-[15px] text-white placeholder-white outline-none focus:border-white transition-colors" />
+              <Mail size={18} className="absolute right-2 top-3 text-white" />
+            </div>
+
+            <div className="relative">
+              <input required type="password" value={form.password} onChange={set("password")} placeholder="Password" autoComplete={isSignup ? "new-password" : "current-password"} className="w-full bg-transparent border-b-2 border-white/30 py-2.5 pr-10 text-[15px] text-white placeholder-white outline-none focus:border-white transition-colors" />
+              <Lock size={18} className="absolute right-2 top-3 text-white" />
+            </div>
+
+            {!isSignup && (
+              <div className="flex items-center justify-between text-[13px] font-medium mt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-white">
+                  <input type="checkbox" checked={form.remember} onChange={set("remember")} className="accent-brand-500 w-3.5 h-3.5 rounded cursor-pointer" />
+                  Remember Me
+                </label>
+                <button type="button" className="text-white hover:underline transition-colors">
+                  Forget Password
+                </button>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="mt-2 w-full rounded-full bg-white px-4 py-3 text-[16px] font-extrabold text-[#04050e] shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+            >
               {loading ? (
-                <>
-                  <Spinner /> {isSignup ? "Creating account…" : "Signing in…"}
-                </>
+                <><Spinner /> {isSignup ? "Registering…" : "Logging in…"}</>
               ) : (
-                <>
-                  {isSignup ? "Create account" : "Sign in"} <Check size={18} />
-                </>
+                <>{isSignup ? "Register" : "Login"}</>
               )}
-            </Button>
+            </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-500">
-            {isSignup ? "Already have an account?" : "New to LeadScout?"}{" "}
-            <button onClick={() => switchMode(isSignup ? "login" : "signup")} className="font-semibold text-brand-600 hover:underline">
-              {isSignup ? "Sign in" : "Create one"}
+          <div className="mt-6 text-center text-[14px] font-medium text-white">
+            {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+            <button onClick={() => switchMode(isSignup ? "login" : "signup")} className="font-extrabold hover:underline ml-1">
+              {isSignup ? "Login" : "Register"}
             </button>
-          </p>
+          </div>
+          
+        </div>
         </div>
       </div>
     </section>
-  );
-}
-
-const inputCls =
-  "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[15px] text-ink outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15";
-
-function Field({ label, children }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-semibold text-ink-soft">{label}</span>
-      {children}
-    </label>
   );
 }

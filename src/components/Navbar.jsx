@@ -36,7 +36,7 @@ export default function Navbar({ current, onNavigate }) {
 
   return (
     <>
-      <header className={`leadx-header${scrolled || current !== "home" ? " scrolled" : ""}`}>
+      <header className={`leadx-header${scrolled || (current !== "home" && current !== "contact") ? " scrolled" : ""}`}>
         <div className="leadx-inner">
 
           {/* ── Brand / Logo ── */}

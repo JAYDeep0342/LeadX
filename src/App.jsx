@@ -23,6 +23,7 @@ export default function App() {
       const path = window.location.pathname.replace(/^\/|\/$/g, "");
       setPage(path || "home");
     };
+    
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
@@ -35,7 +36,7 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-ink">
       {showNavbar && <Navbar current={page} onNavigate={setPage} />}
-      <main className={`flex-1 ${page !== "home" && showNavbar ? "pt-[70px]" : ""}`}>
+      <main className={`flex-1 ${page !== "home" && page !== "contact" && showNavbar ? "pt-[70px]" : ""}`}>
         <AppRoutes page={page} setPage={setPage} />
       </main>
       {showFooter && <Footer onNavigate={setPage} />}
