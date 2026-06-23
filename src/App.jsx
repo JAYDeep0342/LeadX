@@ -23,7 +23,7 @@ export default function App() {
       const path = window.location.pathname.replace(/^\/|\/$/g, "");
       setPage(path || "home");
     };
-    
+
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);

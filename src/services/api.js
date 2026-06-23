@@ -10,7 +10,7 @@
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
 
-async function request(path, { method = "GET", body, token } = {}) {
+async function request(path, { method = "GET", body, token, signal } = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     headers: {
@@ -18,6 +18,7 @@ async function request(path, { method = "GET", body, token } = {}) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
+    signal,
   });
 
   const text = await res.text();
@@ -37,8 +38,8 @@ export const api = {
 
   // Scraper (requires the JWT returned by login)
   // payload: { keyword, location, limit, find_emails }
-  scrape: (payload, token) =>
-    request("/api/scrape", { method: "POST", body: payload, token }),
+  scrape: (payload, token, signal) =>
+    request("/api/scrape", { method: "POST", body: payload, token, signal }),
 };
 
 export default api;

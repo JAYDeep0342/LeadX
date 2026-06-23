@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:where(.dark, .dark *));
 /* =========================================================
    LeadScout — Tailwind v4 theme (BDM Infotech)
    ========================================================= */
@@ -109,6 +109,30 @@
 
   body {
     font-family: var(--font-sans);
+  }
+
+  /* Custom Scrollbar for Dark Theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(4, 5, 14, 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(109, 94, 252, 0.4);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(109, 94, 252, 0.7);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 
