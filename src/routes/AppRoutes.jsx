@@ -10,19 +10,23 @@ const Login    = lazy(() => import("../pages/Login"));
 const Actors   = lazy(() => import("../pages/Actors"));
 const Console  = lazy(() => import("../pages/Console"));
 const NotFound = lazy(() => import("../pages/NotFound"));
-const Solution = lazy(() => import("../pages/Solution"));
+const Solution     = lazy(() => import("../pages/Solution"));
+const OAuthCallback = lazy(() => import("../pages/OAuthCallback"));
 
 const MARKETING = { home: Home, service: Service, company: Company, contact: Contact, demo: Demo, solution: Solution };
 
+
 // Focused app screens — no marketing footer.
-export const APP_PAGES = ["login", "signup", "dashboard", "console", "demo"];
+export const APP_PAGES = ["login", "signup", "dashboard", "console", "demo", "oauth2/callback"];
 
 export const isValidRoute = (page) => {
-  return APP_PAGES.includes(page) || !!MARKETING[page];
+  return APP_PAGES.includes(page) || !!MARKETING[page] || page.startsWith("oauth2");
 };
 
 function PageContent({ page, setPage, isAuthed }) {
-  if (page === "login" || page === "signup") {
+  if (page === "oauth2/callback") {
+    return <OAuthCallback onNavigate={setPage} />;
+  } else if (page === "login" || page === "signup") {
     return <Login key={page} onNavigate={setPage} initialMode={page} />;
   } else if (page === "dashboard") {
     return isAuthed ? <Actors onNavigate={setPage} /> : <Login onNavigate={setPage} initialMode="login" />;

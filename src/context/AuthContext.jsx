@@ -18,8 +18,8 @@ export function AuthProvider({ children }) {
   }, [auth]);
 
   // login response from backend: { Jwt, userid, roles }
-  const login = ({ Jwt, userid, roles }, username) =>
-    setAuth({ token: Jwt, userid, roles, username });
+  const login = ({ Jwt, jwt, userid, roles }, username) =>
+    setAuth({ token: Jwt ?? jwt, userid, roles, username });
 
   const logout = () => setAuth(null);
 
